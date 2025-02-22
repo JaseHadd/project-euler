@@ -11,12 +11,12 @@ export default function sumRange(max, steps)
 
     for (let i = Math.min(...steps); i < max; )
     {
-        const rems = steps.map(s => i % s);
+        const remainders = steps.map(s => i % s);
 
-        if (rems.includes(0))
+        if (remainders.includes(0))
             total += i;
 
-        i += Math.min(...rems.map((r, i) => steps[i] - r));
+        i += Math.min(...remainders.map((r, i) => steps[i] - r));
     }
 
     console.log(total);
