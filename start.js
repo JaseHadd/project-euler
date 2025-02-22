@@ -1,9 +1,20 @@
 import 'node:process'
 
+/**
+ * @template T
+ */
 class Argument
 {
     static String = new Argument('string', s => s);
     static Int = new Argument('int', parseInt);
+    static Bool = new Argument('bool', s => {
+        if (s === '0' || s === 'false')
+            return false;
+        else if (s === '1' || s === 'true')
+            return true;
+        else
+            throw new Error(`Unable to parse ${s} as a boolean`);
+    });
 
     /**
      * @param {Argument} argType 
@@ -17,6 +28,11 @@ class Argument
     name
     converter
 
+    /**
+     * 
+     * @param {string} name 
+     * @param {(value: string) => T} converter 
+     */
     constructor(name, converter)
     {
         this.name = name;
