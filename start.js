@@ -5,7 +5,7 @@ import 'node:process'
  */
 class Argument
 {
-    static String = new Argument('string', s => s);
+    static String = new Argument('string', String.prototype.toString);
     static Int = new Argument('int', parseInt);
     static Bool = new Argument('bool', s => {
         if (s === '0' || s === 'false')
@@ -49,9 +49,9 @@ class Command
     /**
      * @param {string} name 
      * @param {Function} func 
-     * @param  {...Argument} args 
+     * @param {Argument[]} args 
      */
-    constructor(name, func, ...args)
+    constructor(name, func, args)
     {
         this.name = name;
         this.func = func;
@@ -159,8 +159,16 @@ const printCommands = function()
 }
 
 const allCommands = [
-    new Command('list', printCommands),
-    new Command('sum-range', (await import('./problem-1.js')).default, Argument.Int, Argument.Array(Argument.Int))
+    new Command('list', printCommands, []),
+    new Command(
+        'sum-range',
+        (await import('./problem-1.js')).default,
+        [Argument.Int, Argument.Array(Argument.Int)]),
+    new Command(
+        'sumEvenFibonacciNumbers',
+        (await import('./problem-2.js')).sumEvenFibonacciValues,
+        [Argument.Int]
+    )
 ]
 
 if (process.argv.length === 2)
@@ -202,9 +210,11 @@ else
         exit('Multiple commands with this name, please use command indexes to specify');
 }
 
+print(`Using arguments: ${args}`);
 print();
 
 if (args.length !== command.args.length)
-    exit('Incorrect argument length');
+    exit('Incorrect argument count');
 
-command.func(...args.map((e, i) => command.args[i].converter(e)));
+const returnValue = command.func(...args.map((e, i) => command.args[i].converter(e)));
+if (returnValue) print(returnValue);
